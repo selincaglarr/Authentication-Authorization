@@ -18,5 +18,10 @@ router.post("/", async (req, res) => {
   const salt = await bcrypt.genSalt(10);
   user.password = await bcrypt.hash(user.password, salt);
   await user.save();
+  try {
+    res.send(user);
+  } catch (err) {
+    res.status(400).send(err);
+  }
 });
 module.exports = router;
