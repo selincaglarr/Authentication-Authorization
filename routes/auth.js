@@ -1,6 +1,6 @@
 const bcrypt = require("bcryptjs");
 const Joi = require("joi");
-const { User } = require("../models/user");
+const { User, validate } = require("../models/user");
 const mongoose = require("mongoose");
 const router = require("express").Router();
 
@@ -31,12 +31,4 @@ router.post("/", async (req, res) => {
   }
 });
 
-function validate(req) {
-  const schema = Joi.object({
-    name: Joi.string().min(5).max(50).required(),
-    email: Joi.string().min(5).max(255).required().email(),
-    password: Joi.string().min(5).max(255).required(),
-  });
-  return schema.validate(req);
-}
 module.exports = router;
