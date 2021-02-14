@@ -1,9 +1,16 @@
+const auth = require("../middleware/auth"); //authorization
+const admin = require("../middleware/admin");
 const bcrypt = require("bcryptjs");
 const _ = require("lodash");
 const { User, validate } = require("../models/user");
 const mongoose = require("mongoose");
 const express = require("express");
 const router = express.Router();
+
+router.get("/me", auth, async (req, res) => {
+  const user = await User.findById(req.user._id).select("-password");
+  res.send(user);
+});
 
 router.post("/", async (req, res) => {
   const { error } = validate(req.body);
@@ -14,14 +21,13 @@ router.post("/", async (req, res) => {
 
   user = new User(_.pick(req.body, ["name", "email", "password"]));
 
-  //sifreleme
   const salt = await bcrypt.genSalt(10);
   user.password = await bcrypt.hash(user.password, salt);
   await user.save();
-  try {
-    res.send(user);
-  } catch (err) {
-    res.status(400).send(err);
-  }
+
+  const token = user.generateAuthToken();
+  res
+    .header("x-auth-token", token)
+    .send(_.pick(req.body, ["name", "email", "password"]));
 });
 module.exports = router;

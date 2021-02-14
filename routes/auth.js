@@ -1,7 +1,7 @@
 const bcrypt = require("bcryptjs");
 const Joi = require("joi");
 const { User } = require("../models/user");
-const mongoose = require("mongoose");
+// const mongoose = require("mongoose");
 const router = require("express").Router();
 
 router.post("/", async (req, res) => {
@@ -15,7 +15,8 @@ router.post("/", async (req, res) => {
   const validPassword = await bcrypt.compare(req.body.password, user.password);
   if (!validPassword) return res.status(400).send("Invalid password.");
 
-  res.send(user);
+  const token = user.generateAuthToken();
+  res.header("auth-token", token).send(token);
 });
 
 function validate(req) {

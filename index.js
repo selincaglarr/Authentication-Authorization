@@ -1,9 +1,13 @@
 const config = require("config");
+const dotenv = require("dotenv");
 const express = require("express");
 const mongoose = require("mongoose");
+const genres = require("./routes/genres");
 const users = require("./routes/users");
 const auth = require("./routes/auth");
 const app = express();
+
+dotenv.config();
 
 mongoose
   .connect("mongodb://localhost:27017/newAuth", {
@@ -15,6 +19,7 @@ mongoose
 
 //middlewares
 app.use(express.json());
+app.use("/api/genres", genres);
 app.use("/api/auth", auth);
 app.use("/api/users", users);
 
